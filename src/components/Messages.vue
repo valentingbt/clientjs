@@ -1,7 +1,7 @@
 <template>
   <div class="messages">
-    <ul>
-      <li v-for="(message,i) in messages" :key="i + 1">{{ message }}</li>
+    <ul class="chating">
+      <li v-for="(message,i) in messages" :key="i + 1">[{{ message[0] }}] {{ message[2] }}</li>
     </ul>
     <form @submit.prevent="sendMessage(message)">
       <label>
@@ -29,4 +29,15 @@ export default {
 </script>
 
 <style scoped>
+ul {
+  height: 500px;
+  overflow-y: scroll;
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.chating::-webkit-scrollbar {
+  display: none;
+}
 </style>

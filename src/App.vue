@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Chat App</h1>
-    <div class="logreg">
+    <div v-if="!isLogged" class="logreg">
       <div class="selector">
         <div :class="{ active : loginSelect }" @click="loginSelect = true">Login</div>
         <div :class="{ active : !loginSelect }" @click="loginSelect = false">Register</div>
@@ -11,8 +11,10 @@
       {{errors[0]}}
       {{ticketResponse}}
     </div>
-    <div v-if="isLogged">
-      <Messages :sendMessage="send" :messages="messages" />
+    <div class="chat" v-if="isLogged">
+      <Messages :sendMessage="sendMessage" :messages="messages" />
+
+      <Map :sendMessage="sendPosition" :messages="users"></Map>
     </div>
   </div>
 </template>
@@ -22,6 +24,7 @@ const ws = new WebSocket("wss://backend.cleverapps.io");
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Messages from "./components/Messages";
+import Map from "./components/Map";
 
 import axios from "axios";
 
@@ -30,21 +33,21 @@ export default {
   components: {
     Login,
     Register,
-    Messages
+    Messages,
+    Map
   },
   data() {
     return {
       errors: [],
-      messages: ["Hello"],
+      messages: [],
+      users: [],
       isLogged: false,
       ticketResponse: "",
-      hello: "",
       loginSelect: true
     };
   },
   methods: {
     async login(user) {
-      // let loginResponse = "";
       const axiosCredentials = axios.create({
         withCredentials: true
       });
@@ -57,7 +60,6 @@ export default {
         .then(response => {
           console.log("Response :");
           console.log(response.data);
-          // loginResponse = response.data;
         })
         .catch(err => {
           this.errors.push(err);
@@ -90,19 +92,72 @@ export default {
           this.errors.push(err);
         });
     },
-    send(message) {
-      ws.send(message);
+    sendMessage(message) {
+      ws.send("msg:" + message);
+    },
+    sendPosition(message) {
+      ws.send("mov:" + message);
+    },
+    sendClicPos(e) {
+      ws.send(e);
+    },
+    userExists(username) {
+      return this.users.some(function(el) {
+        return el.username === username;
+      });
     }
   },
   mounted() {
+    // We declare the variables we will be able to modify in WS function
     let messages = [];
+    let users = [];
+    // We listen if there is messages in the WS
     ws.onmessage = function(msg) {
-      let response = msg.data;
-      messages.push(response);
-    };
-    this.messages = messages;
+      let response = msg.data; // We get the content of the response
+      let responseArray = response.split(":"); // The response is changed to an array
+      console.log(responseArray);
 
-    console.log(messages);
+      // ResponseArray[0] -> Name of the user
+      // ResponseArray[1] -> Type of the response
+      // ResponseArray[2] -> Content of the response
+
+      if (!responseArray[1] || responseArray[1].replace(/\s/g, "") == "msg") {
+        // If the type of the response exists and is "msg", we push it to the 'messages' array
+
+        messages.push(responseArray);
+      }
+      if (responseArray[1] && responseArray[1].replace(/\s/g, "") == "mov") {
+        // If the type of the response exists and is "mov"
+
+        // This variable returns 'true' if the user already exists in the 'users' array
+        let userExists = users.some(function(el) {
+          return el.username === responseArray[0];
+        });
+        let posxy = responseArray[2].split(","); // We split the content in a new array
+        if (userExists) {
+          // If the user already exists
+          // We find the index of this user in the 'users' array
+          let objIndex = users.findIndex(
+            obj => obj.username == responseArray[0]
+          );
+          // And update his x and y position
+          users[objIndex].x = posxy[0];
+          users[objIndex].y = posxy[1];
+        } else {
+          // If the user doesn't exist, we create it
+          let user = {
+            username: responseArray[0],
+            x: posxy[0],
+            y: posxy[1]
+          };
+          // We push the new user in the 'users' array
+          users.push(user);
+        }
+      }
+    };
+    // Update data variables
+    this.messages = messages;
+    this.users = users;
   }
 };
 </script>
@@ -110,29 +165,9 @@ export default {
 <style>
 @import url("https://fonts.googleapis.com/css?family=Josefin+Sans:400,700&display=swap");
 
-::-webkit-scrollbar {
-  width: 2px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 body {
   width: 100%;
   height: 100vh;
-  overflow: hidden;
   font-family: "Josefin Sans", sans-serif;
   text-align: center;
   margin: 0;
@@ -221,5 +256,17 @@ input:focus {
 .submit {
   cursor: pointer;
   margin-top: 10px;
+}
+
+.chat {
+  display: flex;
+}
+
+.chat .messages {
+  flex: 1;
+}
+
+.chat .map {
+  flex: 3;
 }
 </style>
