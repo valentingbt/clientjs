@@ -2,28 +2,28 @@
   <div class="map">
     <div class="mapview" @click="getPos">
       <div
-        :style="'left:' + message.x + 'px;' + 'top:' + message.y + 'px'"
-        v-for="(message,i) in messages"
+        :style="'left:' + user.x + 'px;' + 'top:' + user.y + 'px'"
+        v-for="(user,i) in users"
         :key="i + 1"
         class="userblock"
-      >{{message.username}}</div>
+      >{{user.username}}</div>
     </div>
-    <p>There is {{messages.length}} players online:</p>
+    <p>There is {{users.length}} players online:</p>
     <ul>
-      <li v-for="(message,i) in messages" :key="i + 1">
+      <li v-for="(user,i) in users" :key="i + 1">
         <div>
-          <div>{{message.username}}</div>
-          <div>x : {{message.x}}</div>
-          <div>y : {{message.y}}</div>
+          <div>{{user.username}}</div>
+          <div>x : {{user.x}}</div>
+          <div>y : {{user.y}}</div>
         </div>
       </li>
     </ul>
-    <form @submit.prevent="sendMessage(message)">
+    <form @submit.prevent="sendData(position)">
       <label>
         Changez votre position:
         <input
-          name="message"
-          v-model="message"
+          name="position"
+          v-model="position"
           class="input"
           type="text"
           value
@@ -38,12 +38,12 @@
 export default {
   name: "Map",
   props: {
-    messages: Array,
-    sendMessage: Function
+    users: Array,
+    sendData: Function
   },
   data() {
     return {
-      message: ""
+      position: "0,0"
     };
   },
   methods: {

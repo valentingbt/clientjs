@@ -14,7 +14,7 @@
     <div class="chat" v-if="isLogged">
       <Messages :sendMessage="sendMessage" :messages="messages" />
 
-      <Map :sendMessage="sendPosition" :messages="users"></Map>
+      <Map :sendData="sendPosition" :users="users"></Map>
     </div>
   </div>
 </template>
