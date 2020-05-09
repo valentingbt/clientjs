@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <h1>Chat App</h1>
-
+    <Navbar :logout="logout" :isLogged="isLogged" />
     <div v-if="!isLogged" class="logreg">
       <div class="selector">
         <div :class="{ active : loginSelect }" @click="loginSelect = true">Login</div>
         <div :class="{ active : !loginSelect }" @click="loginSelect = false">Register</div>
       </div>
       <Login v-if="loginSelect" :loginUser="login" />
-      <Register v-if="!loginSelect" :registerUser="register" :response="registerResponse" class="register" />
+      <Register
+        v-if="!loginSelect"
+        :registerUser="register"
+        :response="registerResponse"
+        class="register"
+      />
       {{errors[0]}}
-      {{ticketResponse}}
     </div>
 
     <div class="chat" v-if="isLogged">
@@ -27,6 +30,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Messages from "./components/Messages";
 import Map from "./components/Map";
+import Navbar from "./components/Navbar";
 
 import axios from "axios";
 
@@ -36,7 +40,8 @@ export default {
     Login,
     Register,
     Messages,
-    Map
+    Map,
+    Navbar
   },
   data() {
     return {
@@ -45,7 +50,7 @@ export default {
       users: [],
       isLogged: false,
       ticketResponse: "",
-      registerResponse:"",
+      registerResponse: "",
       loginSelect: true
     };
   },
@@ -91,6 +96,18 @@ export default {
         .then(response => {
           console.log(response);
           this.registerResponse = response.data;
+        })
+        .catch(err => {
+          this.errors.push(err);
+        });
+    },
+    logout() {
+      console.log("loging out");
+      axios
+        .post(`https://backend.cleverapps.io/logout`)
+        .then(response => {
+          console.log(response);
+          this.isLogged = false;
         })
         .catch(err => {
           this.errors.push(err);
@@ -269,7 +286,8 @@ input:focus {
   height: 700px;
 }
 
-.messages, .map {
+.messages,
+.map {
   flex: 1;
 }
 </style>
