@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar">
+  <div :class="{middle : !isLogged}" class="navbar">
     <h1>Chat App</h1>
     <div v-if="isLogged" class="links">
       <div class="submit">About</div>
@@ -24,6 +24,10 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+
+}
+.middle {
+  justify-content: center;
 }
 
 .links {
