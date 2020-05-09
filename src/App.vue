@@ -8,7 +8,7 @@
         <div :class="{ active : !loginSelect }" @click="loginSelect = false">Register</div>
       </div>
       <Login v-if="loginSelect" :loginUser="login" />
-      <Register v-if="!loginSelect" :registerUser="register" class="register" />
+      <Register v-if="!loginSelect" :registerUser="register" :response="registerResponse" class="register" />
       {{errors[0]}}
       {{ticketResponse}}
     </div>
@@ -45,6 +45,7 @@ export default {
       users: [],
       isLogged: false,
       ticketResponse: "",
+      registerResponse:"",
       loginSelect: true
     };
   },
@@ -82,13 +83,14 @@ export default {
     register(user) {
       console.log("data received");
       axios
-        .post(`https://backend.cleverapps.io/register`, {
+        .post(`https://backend.cleverapps.io/subscribe`, {
           username: user.login,
           email: user.email,
           password: user.password
         })
         .then(response => {
           console.log(response);
+          this.registerResponse = response.data;
         })
         .catch(err => {
           this.errors.push(err);
