@@ -2,8 +2,15 @@
   <div :class="{middle : !isLogged}" class="navbar">
     <h1>Chat App</h1>
     <div v-if="isLogged" class="links">
-      <div class="submit">About</div>
-      <div class="submit">Contact</div>
+      <router-link to="/">
+        <div class="submit">Home</div>
+      </router-link>
+      <router-link to="/about">
+        <div class="submit">About</div>
+      </router-link>
+      <router-link to="/contact">
+        <div class="submit">Contact</div>
+      </router-link>
       <div @click="logout" class="logout submit">Log out</div>
     </div>
   </div>
@@ -24,7 +31,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-
 }
 .middle {
   justify-content: center;
