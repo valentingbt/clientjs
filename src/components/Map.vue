@@ -8,28 +8,27 @@
         class="userblock"
       >{{user.username}}</div>
     </div>
-    <p>There is {{users.length}} players online:</p>
-    <ul>
-      <li v-for="(user,i) in users" :key="i + 1">
-        <div>
-          <div>{{user.username}}</div>
-          <div>x : {{user.x}}</div>
-          <div>y : {{user.y}}</div>
-        </div>
-      </li>
-    </ul>
+    <div v-if="users.length > 0">
+      <p>There is {{users.length}} players online:</p>
+      <ul>
+        <li v-for="(user,i) in users" :key="i + 1">
+          <div>
+            <div>{{user.username}}</div>
+            <div>x : {{user.x}}</div>
+            <div>y : {{user.y}}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <p v-if="users.length  == 0">There is no player online.</p>
+
     <form @submit.prevent="sendData(position)">
-      <label>
-        Changez votre position:
-        <input
-          name="position"
-          v-model="position"
-          class="input"
-          type="text"
-          value
-        />
-      </label>
-      <input class="submit" type="submit" />
+      <label>Change your position:</label>
+      <div class="write">
+        <input name="position" v-model="position" class="input" type="text" value />
+        <input class="submit" type="submit" />
+      </div>
     </form>
   </div>
 </template>
@@ -51,18 +50,24 @@ export default {
       console.log(event.pageX - 400);
       console.log(event.pageY - 70);
       let response = "mov:" + event.pageX + "," + event.pageY;
-      this.$emit('clicPos',response);
+      this.$emit("clicPos", response);
     }
   }
 };
 </script>
 
 <style scoped>
+.map {
+  background: #47178f86;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 .mapview {
   width: 100%;
   height: 500px;
   width: 500px;
-  background: white;
 }
 .userblock {
   position: relative;
@@ -87,5 +92,21 @@ li {
   width: 100px;
   border-radius: 10px;
   padding: 10px;
+}
+.write {
+  display: flex;
+}
+
+.write .input {
+  flex: 3;
+  border-radius: 4px 0px 0px 20px;
+}
+
+.write .submit {
+  flex: 1;
+  margin-top: 0;
+  padding: 0;
+  height: auto;
+  border-radius: 0px 4px 20px 0px;
 }
 </style>

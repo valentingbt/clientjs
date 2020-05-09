@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <h1>Chat App</h1>
+
     <div v-if="!isLogged" class="logreg">
       <div class="selector">
         <div :class="{ active : loginSelect }" @click="loginSelect = true">Login</div>
@@ -11,6 +12,7 @@
       {{errors[0]}}
       {{ticketResponse}}
     </div>
+
     <div class="chat" v-if="isLogged">
       <Messages :sendMessage="sendMessage" :messages="messages" />
 
@@ -260,13 +262,12 @@ input:focus {
 
 .chat {
   display: flex;
+  border-radius: 30px;
+  overflow: hidden;
+  height: 700px;
 }
 
-.chat .messages {
+.messages, .map {
   flex: 1;
-}
-
-.chat .map {
-  flex: 3;
 }
 </style>

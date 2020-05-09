@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "Login",
   props: {
     loginUser: Function
   },
