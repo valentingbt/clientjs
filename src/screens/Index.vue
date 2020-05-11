@@ -105,31 +105,51 @@ export default {
     logout() {
       console.log("loging out");
       axios
-        .post(`https://backend.cleverapps.io/logout`)
+        .post(`https://backend.cleverapps.io/logout`, { withCredentials: true })
         .then(response => {
           console.log(response);
           this.isLogged = false;
+          this.ticketResponse = "";
         })
         .catch(err => {
           this.errors.push(err);
         });
+      ws.close();
+      this.getStatus();
+    },
+    getStatus() {
+      let status = "hey";
+      console.log("getting status");
+      axios
+        .get(`https://backend.cleverapps.io/status`, { withCredentials: true })
+        .then(response => {
+          console.log(response.data);
+          status = response.data;
+          status.includes("Bonjour")
+            ? (this.isLogged = true)
+            : (this.isLogged = false);
+        })
+        .catch(err => {
+          this.errors.push(err);
+        });
+      console.log(this.isLogged);
+      // console.log(status);
+
+      // if (status.includes("Bonjour")) {
+      //   this.isLogged = true;
+      // } else {
+      //   this.isLogged = false;
+      // }
     },
     sendMessage(message) {
       ws.send("msg:" + message);
     },
     sendPosition(message) {
       ws.send("mov:" + message);
-    },
-    sendClicPos(e) {
-      ws.send(e);
-    },
-    userExists(username) {
-      return this.users.some(function(el) {
-        return el.username === username;
-      });
     }
   },
   mounted() {
+    // this.getStatus();
     // We declare the variables we will be able to modify in WS function
     let messages = [];
     let users = [];
